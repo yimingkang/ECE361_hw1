@@ -1,5 +1,40 @@
 import java.net.*;
 import java.io.*;
+
+class RunnableSocketReader implements Runnable {
+    private Thread thisThread;
+    private Socket socket;
+    RunnableSocketReader(Socket soc){
+        socket = soc;
+    }
+
+    @Override 
+    public void run() {
+        try{ 
+            BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            while(true){
+                String str = socket_reader.readLine();
+                if(str == null){
+                    break;
+                }
+                System.out.println("Client said: " + str);
+            }
+            System.out.println("Connection lost! Closing the socket...");
+            socket.close();
+        }
+        catch (Exception e) {e.getStackTrace();}
+        
+    }
+
+    public void start(){
+        if (thisThread == null){
+            thisThread = new Thread(this, "ReaderThread");
+            thisThread.start();
+        }
+
+    }
+}
+
 public class Lab1_practical3 {
     public static void server() throws IOException{
         int port_num = 9876;
@@ -9,23 +44,19 @@ public class Lab1_practical3 {
 
         while(quit == 0){
                 Socket socket = serversSocket.accept();
-                BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 DataOutputStream writer = new DataOutputStream(socket.getOutputStream()); 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+                // start reading from the socket as soon as a connection is accepted
+                RunnableSocketReader sock_reader = new RunnableSocketReader(socket);
+                sock_reader.start();
 
                 writer.writeBytes("GOOD MORNING!" + "\r\n");
                 System.out.println("Got a connection!"); 
                 while(quit ==  0){
-                    String str = socket_reader.readLine();
-                    if(str == null){
-                            break;
-                    }
-                    System.out.println("Client said: " + str);
-                    str = reader.readLine();
+                    String str = reader.readLine();
                     writer.writeBytes(str + "\r\n");
                 }
-                System.out.println("Connection lost!");
-                socket.close();
         }
     }
 
@@ -34,33 +65,7 @@ public class Lab1_practical3 {
 		// TODO Auto-generated method stub
 		System.out.println("Hello World");
         server();
-		try{
-			
-			Socket socket = new Socket("localhost",9876);
-			BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
-            long startTime = -1;
-			
-			while(true){
-			String str = socket_reader.readLine();
-            long endTime = System.currentTimeMillis();
-            if (startTime != -1){
-                // Compute RTT
-                long rtt = endTime - startTime;
-                System.out.println("RTT: " + rtt + "ms");
-            }
-			System.out.println(str);
-			str = reader.readLine();
-			writer.writeBytes(str + "\r\n");
-            // Measure after writeBytes
-            startTime = System.currentTimeMillis();
-			if(str.equalsIgnoreCase("quit"))
-				break;
-            }
-			socket.close();
-		}catch(Exception e){e.getStackTrace();}
-	}
+    }
 }
 
 
