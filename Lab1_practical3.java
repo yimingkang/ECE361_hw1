@@ -1,40 +1,6 @@
 import java.net.*;
 import java.io.*;
 
-class RunnableSocketReader implements Runnable {
-    private Thread thisThread;
-    private Socket socket;
-    RunnableSocketReader(Socket soc){
-        socket = soc;
-    }
-
-    @Override 
-    public void run() {
-        try{ 
-            BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            while(true){
-                String str = socket_reader.readLine();
-                if(str == null){
-                    break;
-                }
-                System.out.println("Client said: " + str);
-            }
-            System.out.println("Connection lost! Closing the socket...");
-            socket.close();
-        }
-        catch (Exception e) {e.getStackTrace();}
-        
-    }
-
-    public void start(){
-        if (thisThread == null){
-            thisThread = new Thread(this, "ReaderThread");
-            thisThread.start();
-        }
-
-    }
-}
-
 public class Lab1_practical3 {
     public static void server() throws IOException{
         int port_num = 9876;
@@ -48,7 +14,7 @@ public class Lab1_practical3 {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
                 // start reading from the socket as soon as a connection is accepted
-                RunnableSocketReader sock_reader = new RunnableSocketReader(socket);
+                RunnableSocketReader sock_reader = new RunnableSocketReader(socket, "Client");
                 sock_reader.start();
 
                 writer.writeBytes("GOOD MORNING!" + "\r\n");
