@@ -9,14 +9,17 @@ public class Lab1_practical3 {
 
         while(quit == 0){
                 Socket socket = serversSocket.accept();
+                BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                DataOutputStream writer = new DataOutputStream(socket.getOutputStream()); 
+                writer.writeBytes("GOOD MORNING!" + "\r\n");
                 System.out.println("Got a connection!"); 
                 while(quit ==  0){
-                    BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String str = socket_reader.readLine();
                     if(str == null){
                             break;
                     }
                     System.out.println("Socket got string: " + str);
+                    writer.writeBytes(str + "\r\n");
                 }
                 System.out.println("Connection lost!");
                 socket.close();

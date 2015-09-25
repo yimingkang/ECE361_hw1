@@ -1,6 +1,12 @@
 import java.net.*;
 import java.io.*;
 public class Lab1_client{
+    public static void get(){
+
+    }
+    public static void put(String s){
+
+    }
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		// TODO Auto-generated method stub
 		System.out.println("Hello World");
