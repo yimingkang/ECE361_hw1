@@ -11,6 +11,8 @@ public class Lab1_practical3 {
                 Socket socket = serversSocket.accept();
                 BufferedReader socket_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 DataOutputStream writer = new DataOutputStream(socket.getOutputStream()); 
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
                 writer.writeBytes("GOOD MORNING!" + "\r\n");
                 System.out.println("Got a connection!"); 
                 while(quit ==  0){
@@ -18,7 +20,8 @@ public class Lab1_practical3 {
                     if(str == null){
                             break;
                     }
-                    System.out.println("Socket got string: " + str);
+                    System.out.println("Client said: " + str);
+                    str = reader.readLine();
                     writer.writeBytes(str + "\r\n");
                 }
                 System.out.println("Connection lost!");
